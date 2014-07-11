@@ -1,6 +1,9 @@
 {
   "name": "countonmejs",
   "version": "0.1.0",
+  "main": [
+      "./dist/countonmejs.min.js"
+  ],
   "ignore": [
     "bin",
     "spec",
