@@ -1,35 +1,6 @@
-/*global CountOnMe,describe,it,expect,beforeEach,afterEach,jasmine*/
+/*global CountOnMe,describe,it,expect*/
 describe('CountOnMeJs.counter', function() {
   'use strict';
-
-  var noop = function() {};
-
-  /*var simulateClick = function (id) {
-      var evt = document.createEvent('MouseEvents');
-      evt.initMouseEvent('click', true, true, window, 1, 0, 0, 0, 0,
-          false, false, false, false, 0, null);
-
-      var cb = document.getElementById(id);
-      cb.dispatchEvent(evt);
-  };*/
-  
-  var update = noop;
-  var update2 = noop;
-  var update3 = noop;
-
-  beforeEach(function() {
-      update = jasmine.createSpy('update');
-      update2 = jasmine.createSpy('update2');
-      update3 = jasmine.createSpy('update3');
-
-     jasmine.clock().install();
-     //var baseTime = new Date(2013, 9, 23);
-     //jasmine.clock().mockDate(baseTime);
-  });
-
-  afterEach(function() {
-      jasmine.clock().uninstall();
-  });
 
   it('should check the MAX_VALUE', function () {
     expect(CountOnMe.counter.MAX_VALUE).toBe(4294967296);

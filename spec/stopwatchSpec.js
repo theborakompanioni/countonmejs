@@ -2,110 +2,159 @@
 describe('CountOnMeJs.stopwatch', function() {
   'use strict';
 
-  var noop = function() {};
+  describe('with mocked date', function() {
+      var stopwatch = null;
 
-  var update = noop;
-  var update2 = noop;
-  var update3 = noop;
+      beforeEach(function() {
+        jasmine.clock().install();
 
-  var stopwatch = null;
+        stopwatch = CountOnMe.stopwatch();
 
-  beforeEach(function() {
-      update = jasmine.createSpy('update');
-      update2 = jasmine.createSpy('update2');
-      update3 = jasmine.createSpy('update3');
+        jasmine.clock().mockDate();
+      });
 
-     jasmine.clock().install();
+      afterEach(function() {
+        stopwatch.stop();
 
-     stopwatch = CountOnMe.stopwatch();
+        jasmine.clock().uninstall();
+      });
 
-     //var baseTime = new Date(2013, 9, 23);
-     //jasmine.clock().mockDate(baseTime);
+      it('should create a StopWatch instance', function () {
+        expect(stopwatch).toBeDefined();
+        expect(stopwatch.time()).toBe(0);
+        expect(stopwatch.interim()).toBe(0);
+        expect(stopwatch.get()).toBe(0);
+        expect(stopwatch.running()).toBe(false);
+      });
+
+      it('should create a StopWatch instance with and without ´new´', function () {
+        var stopwatch = new CountOnMe.stopwatch();
+        expect(stopwatch).toBeDefined();
+
+        var stopwatch2 = CountOnMe.stopwatch();
+        expect(stopwatch2).toBeDefined();
+       });
+
+      it('should test restart', function () {
+        expect(stopwatch.start().time()).toBe(0);
+
+        jasmine.clock().tick(100);
+
+        expect(stopwatch.time()).toBe(100);
+        expect(stopwatch.restart().time()).toBe(0);
+
+        jasmine.clock().tick(5000);
+
+        expect(stopwatch.time()).toBe(5000);
+        expect(stopwatch.restart().time()).toBeCloseTo(0,0);
+
+        expect(stopwatch.stop().running()).toBe(false);
+      });
+
+      it('should test getAndRestartIf', function () {
+        expect(stopwatch.start().getAndRestartIf(false)).toBe(0);
+
+        jasmine.clock().tick(100);
+
+        expect(stopwatch.time()).toBe(100);
+        expect(stopwatch.getAndRestartIf(true)).toBe(100);
+        expect(stopwatch.time()).toBe(0);
+
+        jasmine.clock().tick(5000);
+
+        expect(stopwatch.time()).toBe(5000);
+
+        expect(stopwatch.stop().running()).toBe(false);
+      });
+
+      it('should test startIf', function () {
+        expect(stopwatch.startIf(true).time()).toBe(0);
+
+        jasmine.clock().tick(10);
+
+        expect(stopwatch.get()).toBe(10);
+
+        jasmine.clock().tick(10);
+
+        expect(stopwatch.get()).toBe(20);
+
+        expect(stopwatch.running()).toBe(true);
+        expect(stopwatch.stop().running()).toBe(false);
+
+        jasmine.clock().tick(1000);
+
+        expect(stopwatch.startIf(false).get()).toBe(20);
+        expect(stopwatch.running()).toBe(false);
+      });
+
+      it('should test stopIf', function () {
+        expect(stopwatch.start().time()).toBe(0);
+
+        expect(stopwatch.stopIf(false).get()).toBe(0);
+        expect(stopwatch.running()).toBe(true);
+
+        jasmine.clock().tick(10);
+
+        expect(stopwatch.stopIf(true).get()).toBe(10);
+
+        expect(stopwatch.running()).toBe(false);
+      });
+
+      it('should count 0ms', function () {
+        expect(stopwatch.start().stop().get()).toBe(0);
+
+        jasmine.clock().tick(5000);
+
+        expect(stopwatch.get()).toBe(0);
+      });
+
+      it('should count 1000ms', function () {
+        expect(stopwatch.start().get()).toBe(0);
+
+        jasmine.clock().tick(1000);
+
+        stopwatch.stop();
+
+        jasmine.clock().tick(1000);
+
+        expect(stopwatch.get()).toBe(1000);
+      });
+
+      it('should count 1000ms by using mocked values', function () {
+        expect(stopwatch.start(100).get(110)).toBe(10);
+        expect(stopwatch.get(1100)).toBe(1000);
+      });
   });
 
-  afterEach(function() {
-      stopwatch.stop();
+  describe('with mocked date', function() {
+      /**
+       * Unlike other timing data available to JavaScript (for example Date.now),
+       * the timestamps returned by Performance.now() are not limited to one-millisecond
+       * resolution. Instead, they represent times as floating-point numbers
+       * with up to microsecond precision.
+       *
+       * Because we cannot be certain about exactly when
+       * the callbacks from `setTimeout` will be invoked, we have to use
+       * `toBeGreaterThan` and `toBeLessThan` instead of `toBeCloseTo`.
+       */
+      it('should test with performance measuring', function (done) {
+        var stopwatch = CountOnMe.stopwatch({ performance: true });
 
-      jasmine.clock().uninstall();
+        expect(stopwatch.start().time()).toBe(0);
+
+        setTimeout(function() {
+          expect(stopwatch.time()).toBeGreaterThan(18);
+          expect(stopwatch.time()).toBeLessThan(18 + 5);
+          expect(stopwatch.restart().time()).toBe(0);
+        }, 20);
+
+        setTimeout(function() {
+          expect(stopwatch.time()).toBeGreaterThan(11);
+          expect(stopwatch.time()).toBeLessThan(11 + 5);
+          expect(stopwatch.restart().time()).toBe(0);
+
+          done();
+        }, 33);
+      });
   });
-
-  it('should create a StopWatch instance', function () {
-    expect(stopwatch).toBeDefined();
-    expect(stopwatch.time()).toBe(0);
-    expect(stopwatch.interim()).toBe(0);
-    expect(stopwatch.get()).toBe(0);
-    expect(stopwatch.running()).toBe(false);
-  });
-
-  it('should create a StopWatch instance with and without ´new´', function () {
-    var stopwatch = new CountOnMe.stopwatch();
-    expect(stopwatch).toBeDefined();
-
-    var stopwatch2 = CountOnMe.stopwatch();
-    expect(stopwatch2).toBeDefined();
-   });
-
-  it('should test restart', function () {
-     expect(stopwatch.start(0).time(0)).toBe(0);
-
-     jasmine.clock().tick(100);
-
-     expect(stopwatch.time(100)).toBe(100);
-     expect(stopwatch.restart(0).time(0)).toBe(0);
-
-     jasmine.clock().tick(5000);
-
-     expect(stopwatch.time(5000)).toBe(5000);
-     expect(stopwatch.restart().time()).toBeCloseTo(0,0);
-
-     expect(stopwatch.stop().running()).toBe(false);
-  });
-
-  it('should test getAndRestartIf', function () {
-    expect(stopwatch.start(0).getAndRestartIf(false, 0)).toBe(0);
-
-    jasmine.clock().tick(100);
-
-    expect(stopwatch.time(100)).toBe(100);
-    expect(stopwatch.getAndRestartIf(true, 100)).toBe(100);
-    expect(stopwatch.time(100)).toBe(0);
-
-    jasmine.clock().tick(5000);
-
-    expect(stopwatch.time(5100)).toBe(5000);
-
-    expect(stopwatch.stop().running()).toBe(false);
-  });
-
-  it('should test stopIf', function () {
-    expect(stopwatch.start(0).time(0)).toBe(0);
-
-    expect(stopwatch.stopIf(false, 0).get(0)).toBe(0);
-    expect(stopwatch.running()).toBe(true);
-
-    expect(stopwatch.stopIf(true, 10).get(20)).toBe(10);
-    expect(stopwatch.running()).toBe(false);
-  });
-
-  it('should count 0ms', function () {
-    expect(stopwatch.start(0).stop(0).get()).toBe(0);
-
-    jasmine.clock().tick(5000);
-
-    expect(stopwatch.get(5000)).toBe(0);
-  });
-
-  it('should count 1000ms', function () {
-    expect(stopwatch.start(0).get(0)).toBe(0);
-    expect(stopwatch.start(0).get(100)).toBe(100);
-
-    jasmine.clock().tick(1000);
-
-    stopwatch.stop(1000);
-
-    jasmine.clock().tick(1000);
-
-    expect(stopwatch.get()).toBe(1000);
-  });
-
 });

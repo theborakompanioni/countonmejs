@@ -17,6 +17,7 @@
            };
         }
 
+        // @href https://developer.mozilla.org/en-US/docs/Web/API/Performance.now
         if(!window.performance) {
             window.performance = window.performance || {};
             // handle vendor prefixing
@@ -95,7 +96,7 @@
                 return new StopWatch(config);
             }
             this._config = config || {};
-            this._config.performance = this._config.performance !== false;
+            this._config.performance = this._config.performance === true;
             this._$ = {
                ts : 0, // time start
                te : 0, // time end
@@ -120,13 +121,8 @@
             return this.startIf(!this._$.r, optNow);
         };
 
-        StopWatch.prototype.forceStart = function(optNow) {
-            return this.startIf(true, optNow);
-        };
-
-        // alias for forceStart
         StopWatch.prototype.restart = function(optNow) {
-            return this.forceStart(optNow);
+            return this.startIf(true, optNow);
         };
 
         StopWatch.prototype.stop = function (optNow) {
@@ -141,8 +137,6 @@
             return this;
         };
 
-        /***/
-
         StopWatch.prototype.interim = function (optNow) {
             if (!this._$.r) {
                 return 0;
@@ -150,9 +144,6 @@
 
             return this._orNow(optNow) - this._$.ts;
         };
-
-        // alias
-        StopWatch.prototype.time =  StopWatch.prototype.interim;
 
         StopWatch.prototype.get = function (optNow) {
             if(this._$.te) {
@@ -172,15 +163,17 @@
             if(condition) {
               this.restart(optNow);
             }
+
             return time;
         };
+
+        StopWatch.prototype.forceStart = StopWatch.prototype.restart;
+        StopWatch.prototype.time =  StopWatch.prototype.interim;
 
         return StopWatch;
     }());
 
-
     window.CountOnMe = {
-        version: '0.1.0',
         counter: Counter,
         stopwatch: StopWatch
     };

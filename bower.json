@@ -1,6 +1,6 @@
 {
   "name": "countonmejs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": [
       "./dist/countonmejs.min.js"
   ],
@@ -19,6 +19,6 @@
   "dependencies": {
   },
   "devDependencies": {
-    "jasmine": "pivotal/jasmine#master"
+    "jasmine": "jasmine/jasmine#2.1.3"
   }
 }

@@ -90,6 +90,11 @@ module.exports = function(grunt) {
                 configFile: 'karma.conf.js'
             }
         },
+        micro: {
+            dist: {
+              src: '<%= dirs.build %>/<%= pkg.name %>.min.js'
+            }
+        },
         notify: {
             js: {
                 options: {
@@ -107,10 +112,11 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jasmine');
 
     grunt.loadNpmTasks('grunt-notify');
+    grunt.loadNpmTasks('grunt-micro');
 
     grunt.loadNpmTasks('grunt-karma');
 
     grunt.registerTask( 'test', [ 'jasmine', 'karma']);
-    grunt.registerTask( 'default', [ 'jshint', 'test', 'uglify', 'notify:js' ]);
+    grunt.registerTask( 'default', [ 'jshint', 'test', 'uglify', 'micro', 'notify:js' ]);
 
 };
