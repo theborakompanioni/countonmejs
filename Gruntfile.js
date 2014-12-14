@@ -34,6 +34,17 @@ module.exports = function(grunt) {
                 src: ['karma.conf.js']
             }
         },
+        umd: {
+            all: {
+                options: {
+                    src: '<%= dirs.js %>/<%= pkg.name %>.js',
+                    dest: '<%= dirs.build %>/<%= pkg.name %>.js',
+                    objectToExport: 'CountOnMe', // optional, internal object that will be exported
+                    globalAlias: 'CountOnMe', // optional, changes the name of the global variable
+                    indent: 4 // optional (defaults to 2), indent source code. Accepts strings as well
+                }
+            }
+        },
         uglify: {
             options: {
                 mangle: false,
@@ -41,7 +52,7 @@ module.exports = function(grunt) {
             },
             dist: {
               files: {
-                  '<%= dirs.build %>/<%= pkg.name %>.min.js': '<%= dirs.js %>/<%= pkg.name %>.js'
+                  '<%= dirs.build %>/<%= pkg.name %>.min.js': '<%= dirs.build %>/<%= pkg.name %>.js'
               }
             }
         },
@@ -113,10 +124,11 @@ module.exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-notify');
     grunt.loadNpmTasks('grunt-micro');
+    grunt.loadNpmTasks('grunt-umd');
 
     grunt.loadNpmTasks('grunt-karma');
 
     grunt.registerTask( 'test', [ 'jasmine', 'karma']);
-    grunt.registerTask( 'default', [ 'jshint', 'test', 'uglify', 'micro', 'notify:js' ]);
+    grunt.registerTask( 'default', [ 'jshint', 'test', 'umd', 'uglify', 'micro', 'notify:js' ]);
 
 };
