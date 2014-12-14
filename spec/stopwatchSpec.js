@@ -143,18 +143,18 @@ describe('CountOnMeJs.stopwatch', function() {
         expect(stopwatch.start().time()).toBeCloseTo(0, 0);
 
         setTimeout(function() {
-          expect(stopwatch.time()).toBeGreaterThan(18);
-          expect(stopwatch.time()).toBeLessThan(18 + 5);
+          expect(stopwatch.time()).toBeGreaterThan(100 - 10);
+          expect(stopwatch.time()).toBeLessThan(100 + 10);
           expect(stopwatch.restart().time()).toBeCloseTo(0, 0);
-        }, 20);
+        }, 100);
 
         setTimeout(function() {
-          expect(stopwatch.time()).toBeGreaterThan(11);
-          expect(stopwatch.time()).toBeLessThan(11 + 5);
+          expect(stopwatch.time()).toBeGreaterThan(200 - 10);
+          expect(stopwatch.time()).toBeLessThan(200 + 10);
           expect(stopwatch.restart().time()).toBeCloseTo(0, 0);
 
           done();
-        }, 33);
+        }, 300);
       });
   });
 });
