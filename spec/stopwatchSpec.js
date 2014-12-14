@@ -140,18 +140,18 @@ describe('CountOnMeJs.stopwatch', function() {
       it('should test with performance measuring', function (done) {
         var stopwatch = CountOnMe.stopwatch({ performance: true });
 
-        expect(stopwatch.start().time()).toBe(0);
+        expect(stopwatch.start().time()).toBeCloseTo(0, 0);
 
         setTimeout(function() {
           expect(stopwatch.time()).toBeGreaterThan(18);
           expect(stopwatch.time()).toBeLessThan(18 + 5);
-          expect(stopwatch.restart().time()).toBe(0);
+          expect(stopwatch.restart().time()).toBeCloseTo(0, 0);
         }, 20);
 
         setTimeout(function() {
           expect(stopwatch.time()).toBeGreaterThan(11);
           expect(stopwatch.time()).toBeLessThan(11 + 5);
-          expect(stopwatch.restart().time()).toBe(0);
+          expect(stopwatch.restart().time()).toBeCloseTo(0, 0);
 
           done();
         }, 33);
